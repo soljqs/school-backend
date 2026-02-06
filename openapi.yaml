@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: Axum Admin DB API
+  description: |
+    Admin database browser API.
+    Requires JWT Bearer authentication.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: AdminDB
+    description: 数据库管理接口
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: ok
+        data:
+          nullable: true
+
+    TableSchema:
+      type: object
+      properties:
+        field:
+          type: string
+        type:
+          type: string
+        null:
+          type: string
+        key:
+          type: string
+        default:
+          nullable: true
+
+security:
+  - BearerAuth: []
+
+paths:
+  /admin/db/tables:
+    get:
+      tags: [AdminDB]
+      summary: 获取表列表
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: string
+
+  /admin/db/table/{table}/schema:
+    get:
+      tags: [AdminDB]
+      summary: 获取表结构
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TableSchema'
+
+  /admin/db/table/{table}/count:
+    get:
+      tags: [AdminDB]
+      summary: 获取表记录数
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: integer
+                        example: 100
+
+  /admin/db/table/{table}:
+    get:
+      tags: [AdminDB]
+      summary: 表分页数据
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            example: 1
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            example: 20
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          additionalProperties: true
+
