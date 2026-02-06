@@ -1,5 +1,13 @@
-/target
-.env
+# Rust
 target/
-node_modules/
+
+# env
+.env
+
+# logs
 *.log
+
+# IDE
+.vscode/
+.idea/
+
